@@ -13,6 +13,13 @@ make
 cd ..
 ```
 
+2. b) pycocotools and other dependencies
+```
+conda install -c conda-forge pycocotools
+conda install -c conda-forge scikit-image
+conda install -c anaconda nltk
+```
+
 3. Download some specific data from here: http://cocodataset.org/#download (described below)
 
 * Under **Annotations**, download:
