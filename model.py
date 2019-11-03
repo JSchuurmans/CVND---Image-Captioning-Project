@@ -89,12 +89,12 @@ class DecoderRNN(nn.Module):
         " accepts pre-processed image tensor (inputs) and returns predicted sentence (list of tensor ids of length max_len) "
         output = []
         # clear hidden state
-        h_shape = (1, inputs.shape[0], self.hidden_size)
-        hidden = (torch.randn(h_shape).cuda(), torch.randn(h_shape).cuda())
+#         h_shape = (1, inputs.shape[0], self.hidden_size)
+#         hidden = (torch.randn(h_shape).cuda(), torch.randn(h_shape).cuda())
         # loop until <end> token is sampled or maximum length is reached
 #         out, hidden = self.lstm()
         for i in range(max_len):
-            out, hidden = self.lstm(inputs, hidden)
+            out, states = self.lstm(inputs, states)
             if self.debug:
                 print('out: ', out.shape)
             
