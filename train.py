@@ -1,21 +1,29 @@
-# !pip install nltk
+import sys
+import math
+import os
+import time
+
 import nltk
 nltk.download('punkt')
+import numpy as np
 
 import torch
 import torch.nn as nn
+from torch import optim
+from torch.optim.lr_scheduler import StepLR
+import torch.utils.data as data
+
 from torchvision import transforms
-import sys
-sys.path.append('/opt/cocoapi/PythonAPI')
-from pycocotools.coco import COCO
+
 from data_loader import get_loader
 from model import EncoderCNN, DecoderRNN
-import math
-from torch import optim
+
+sys.path.append('/opt/cocoapi/PythonAPI')
+from pycocotools.coco import COCO
 
 
 ## TODO #1: Select appropriate values for the Python variables below.
-batch_size = 12          # batch size
+batch_size = 128          # batch size
 vocab_threshold = 5        # minimum word count threshold
 vocab_from_file = True    # if True, load existing vocab file
 embed_size = 512           # dimensionality of image and word embeddings
@@ -48,7 +56,6 @@ data_loader = get_loader(transform=transform_train,
 # The size of the vocabulary.
 vocab_size = len(data_loader.dataset.vocab)
 
-from torch.optim.lr_scheduler import StepLR
 
 # Initialize the encoder and decoder. 
 encoder = EncoderCNN(embed_size)
@@ -76,15 +83,14 @@ scheduler = StepLR(optimizer, step_size=1, gamma=0.1)
 # Set the total number of training steps per epoch.
 total_step = math.ceil(len(data_loader.dataset.caption_lengths) / data_loader.batch_sampler.batch_size)
 
-import time
 t = round(time.time())
-log_file = 'training_log_'+str(t)+'.txt'
+log_dir = os.path.join('log',str(t))
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+log_file = os.path.join(log_dir,'training_log.txt')
 
-import torch.utils.data as data
-import numpy as np
-import os
+
 # import requests
-import time
 
 # Open the training log file.
 f = open(log_file, 'w')
@@ -94,7 +100,7 @@ f = open(log_file, 'w')
 #                             "http://metadata.google.internal/computeMetadata/v1/instance/attributes/keep_alive_token", 
 #                             headers={"Metadata-Flavor":"Google"})
 
-output_path = './models'
+output_path = os.path.join(log_dir,'models')
 
 if not os.path.exists(output_path):
     os.makedirs(output_path)
